@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { destination, days, companion, interests } = req.body;
+        const { destination, days, companion, interests, transportation } = req.body;
 
         if (!destination) {
             return res.status(400).json({ error: '여행지를 입력해주세요.' });
@@ -35,6 +35,7 @@ export default async function handler(req, res) {
         const durationDays = parseInt(days) || 3;
         const companionType = companion || '친구';
         const interestList = Array.isArray(interests) ? interests.join(', ') : '자유 관광';
+        const transportMode = transportation || '대중교통';
 
         // Prompt with safety guidelines, anti-irrelevant request logic, and non-absolute pricing/hours constraint
         const systemPrompt = `
@@ -50,6 +51,7 @@ export default async function handler(req, res) {
 - 기간: ${durationDays}박 ${durationDays + 1}일
 - 동행자: ${companionType}
 - 관심사: ${interestList}
+- 이동 수단: ${transportMode}
 
 [필수 JSON 출력 스키마]
 {
@@ -57,6 +59,7 @@ export default async function handler(req, res) {
   "duration": "${durationDays}박 ${durationDays + 1}일",
   "companion": "${companionType}",
   "interests": ${JSON.stringify(interests || [])},
+  "transportation": "${transportMode}",
   "days": [
     {
       "dayNumber": 1,
