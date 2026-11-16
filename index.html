@@ -6,13 +6,16 @@
     <title>AI 맞춤 여행 플래너</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Font: Inter & Pretendard vibe -->
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts (Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Pretendard', sans-serif;
+            background-color: #f8fafc;
         }
-        /* Custom scrollbar for sleek horizontal day tabs */
+        /* Custom scrollbar for horizontal day tabs */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -22,357 +25,402 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+<body class="min-h-screen flex flex-col items-center justify-start text-slate-800 antialiased">
 
-    <!-- Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div class="max-w-md mx-auto px-4 py-3.5 flex items-center justify-between">
+    <!-- Mobile Wrapper Container -->
+    <div class="w-full max-w-md min-h-screen bg-white shadow-xl flex flex-col relative overflow-hidden">
+        
+        <!-- Top App Bar -->
+        <header class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-5 sticky top-0 z-20 shadow-md flex items-center justify-between">
             <div class="flex items-center space-x-2">
-                <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-200">
-                    ✈️
+                <span class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <i data-lucide="compass" class="w-6 h-6 text-white"></i>
+                </span>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight">AI 트립 플래너</h1>
+                    <p class="text-xs text-indigo-100">나만의 맞춤형 여행 일정표</p>
                 </div>
-                <span class="font-bold text-lg tracking-tight text-slate-900">TripGenie <span class="text-xs px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-full font-medium">AI</span></span>
             </div>
-            <button onclick="resetApp()" class="text-xs text-slate-500 hover:text-indigo-600 font-medium px-2.5 py-1 rounded-lg hover:bg-slate-100 transition-colors">
-                새로 만들기
+            <button id="reset-btn" onclick="resetApp()" class="hidden text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition font-medium">
+                처음으로
             </button>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 max-w-md w-full mx-auto p-4 pb-16">
-
-        <!-- Input Form Section -->
-        <section id="formSection" class="transition-all duration-300">
-            <div class="text-center mb-6 mt-2">
-                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">어디로 떠나시나요?</h1>
-                <p class="text-sm text-slate-500 mt-1">AI가 취향에 딱 맞는 일정을 짜드립니다.</p>
-            </div>
-
-            <form id="travelForm" onsubmit="handleGenerate(event)" class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
-                
-                <!-- Destination -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">여행지</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">📍</span>
-                        <input type="text" id="destination" required placeholder="예: 제주도, 도쿄, 파리" 
-                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all">
-                    </div>
-                </div>
-
-                <!-- Duration -->
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">여행 기간</label>
-                        <select id="duration" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all">
-                            <option value="1박 2일">1박 2일</option>
-                            <option value="2박 3일" selected>2박 3일</option>
-                            <option value="3박 4일">3박 4일</option>
-                            <option value="4박 5일">4박 5일</option>
-                            <option value="5박 6일 이상">5박 6일 이상</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">누구와?</label>
-                        <select id="companion" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all">
-                            <option value="혼자">혼자</option>
-                            <option value="친구와" selected>친구와</option>
-                            <option value="연인과">연인과</option>
-                            <option value="가족과">가족과</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Interests -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">관심사 (복수 선택 가능)</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <label class="cursor-pointer">
-                            <input type="checkbox" name="interests" value="맛집탐방" checked class="peer sr-only">
-                            <div class="text-center py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 transition-all">
-                                🍽️ 맛집탐방
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="checkbox" name="interests" value="액티비티" class="peer sr-only">
-                            <div class="text-center py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 transition-all">
-                                🏄‍♂️ 액티비티
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="checkbox" name="interests" value="휴식/힐링" checked class="peer sr-only">
-                            <div class="text-center py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 transition-all">
-                                🌿 힐링/휴식
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="checkbox" name="interests" value="쇼핑" class="peer sr-only">
-                            <div class="text-center py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 transition-all">
-                                🛍️ 쇼핑
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="checkbox" name="interests" value="역사/문화" class="peer sr-only">
-                            <div class="text-center py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 transition-all">
-                                🏛️ 역사/문화
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="checkbox" name="interests" value="카페투어" checked class="peer sr-only">
-                            <div class="text-center py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 transition-all">
-                                ☕ 카페투어
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" id="submitBtn" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center space-x-2">
-                    <span>✨ 맞춤 일정 생성하기</span>
-                </button>
-            </form>
-        </section>
-
-        <!-- Loading State -->
-        <div id="loadingSection" class="hidden py-16 text-center">
-            <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-indigo-600 border-t-transparent mb-4"></div>
-            <h2 class="text-lg font-bold text-slate-800">AI가 여행 일정을 짜고 있어요...</h2>
-            <p class="text-xs text-slate-500 mt-1">잠시만 기다려주세요. 최적의 코스를 구성 중입니다.</p>
-        </div>
-
-        <!-- Result Section -->
-        <section id="resultSection" class="hidden space-y-4">
+        <!-- Main Content Area -->
+        <main class="flex-1 p-5 pb-12 overflow-y-auto">
             
-            <!-- Summary Card -->
-            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-600/20 rounded-full blur-2xl"></div>
-                <div class="flex justify-between items-start mb-3">
-                    <div>
-                        <span id="resTag" class="text-xs font-medium px-2.5 py-1 bg-white/10 rounded-full backdrop-blur-md text-indigo-200">2박 3일 · 친구와</span>
-                        <h2 id="resDestination" class="text-2xl font-bold mt-2 tracking-tight">제주도 여행 일정</h2>
+            <!-- 1. Input Form View -->
+            <section id="form-view" class="space-y-6">
+                <div class="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4 text-indigo-900 flex items-start space-x-3">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-indigo-600 shrink-0 mt-0.5"></i>
+                    <div class="text-xs leading-relaxed">
+                        <span class="font-semibold block mb-0.5 text-indigo-950">Gemini AI가 일정을 짜드려요!</span>
+                        가고 싶은 여행지와 선호하는 스타일을 입력하시면 완벽한 동선을 추천해 드립니다.
                     </div>
-                    <button onclick="editForm()" class="bg-white/10 hover:bg-white/25 text-white text-xs px-3 py-1.5 rounded-xl backdrop-blur-md transition-all font-medium">
-                        수정
+                </div>
+
+                <form id="travel-form" onsubmit="handleGeneratePlan(event)" class="space-y-5">
+                    <!-- Destination -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                            어디로 떠나시나요? <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                                <i data-lucide="map-pin" class="w-4 h-4"></i>
+                            </span>
+                            <input type="text" id="destination" required 
+                                placeholder="예: 제주도, 도쿄, 파리, 부산" 
+                                class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                        </div>
+                    </div>
+
+                    <!-- Duration -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                            여행 기간 <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                            </span>
+                            <select id="duration" required
+                                class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition appearance-none">
+                                <option value="" disabled selected>여행 기간을 선택하세요</option>
+                                <option value="1박 2일">1박 2일</option>
+                                <option value="2박 3일">2박 3일</option>
+                                <option value="3박 4일">3박 4일</option>
+                                <option value="4박 5일">4박 5일</option>
+                                <option value="일주일">일주일 이상</option>
+                            </select>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Companion -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                            누구와 가시나요?
+                        </label>
+                        <div class="grid grid-cols-4 gap-2" id="companion-group">
+                            <button type="button" onclick="selectCompanion(this, '혼자')" class="companion-btn py-2.5 px-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:border-indigo-500 hover:text-indigo-600 transition bg-slate-50 flex flex-col items-center justify-center gap-1 active">
+                                <i data-lucide="user" class="w-4 h-4"><span>혼자</span></i>
+                            </button>
+                            <button type="button" onclick="selectCompanion(this, '친구')" class="companion-btn py-2.5 px-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:border-indigo-500 hover:text-indigo-600 transition bg-slate-50 flex flex-col items-center justify-center gap-1">
+                                <i data-lucide="users" class="w-4 h-4"><span>친구</span></i>
+                            </button>
+                            <button type="button" onclick="selectCompanion(this, '연인')" class="companion-btn py-2.5 px-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:border-indigo-500 hover:text-indigo-600 transition bg-slate-50 flex flex-col items-center justify-center gap-1">
+                                <i data-lucide="heart" class="w-4 h-4"><span>연인</span></i>
+                            </button>
+                            <button type="button" onclick="selectCompanion(this, '가족')" class="companion-btn py-2.5 px-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:border-indigo-500 hover:text-indigo-600 transition bg-slate-50 flex flex-col items-center justify-center gap-1">
+                                <i data-lucide="home" class="w-4 h-4"><span>가족</span></i>
+                            </button>
+                        </div>
+                        <input type="hidden" id="companion" value="혼자">
+                    </div>
+
+                    <!-- Interests -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                            관심사 (복수 선택 가능)
+                        </label>
+                        <div class="flex flex-wrap gap-2 pt-1">
+                            <label class="interest-chip cursor-pointer inline-flex items-center px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 hover:border-indigo-300 transition">
+                                <input type="checkbox" name="interests" value="맛집" class="sr-only peer">
+                                <span class="peer-checked:text-indigo-600">🍜 맛집탐방</span>
+                            </label>
+                            <label class="interest-chip cursor-pointer inline-flex items-center px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 hover:border-indigo-300 transition">
+                                <input type="checkbox" name="interests" value="힐링" class="sr-only peer">
+                                <span class="peer-checked:text-indigo-600">🌿 힐링/휴양</span>
+                            </label>
+                            <label class="interest-chip cursor-pointer inline-flex items-center px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 hover:border-indigo-300 transition">
+                                <input type="checkbox" name="interests" value="액티비티" class="sr-only peer">
+                                <span class="peer-checked:text-indigo-600">🏄 액티비티</span>
+                            </label>
+                            <label class="interest-chip cursor-pointer inline-flex items-center px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 hover:border-indigo-300 transition">
+                                <input type="checkbox" name="interests" value="쇼핑" class="sr-only peer">
+                                <span class="peer-checked:text-indigo-600">🛍️ 쇼핑</span>
+                            </label>
+                            <label class="interest-chip cursor-pointer inline-flex items-center px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 hover:border-indigo-300 transition">
+                                <input type="checkbox" name="interests" value="문화/역사" class="sr-only peer">
+                                <span class="peer-checked:text-indigo-600">🏛️ 문화/역사</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" 
+                        class="w-full mt-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:from-indigo-700 hover:to-violet-700 active:scale-[0.99] transition duration-200 flex items-center justify-center space-x-2">
+                        <i data-lucide="wand-2" class="w-5 h-5"></i>
+                        <span>AI 맞춤 일정 생성하기</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- 2. Loading View (Hidden by default) -->
+            <section id="loading-view" class="hidden flex flex-col items-center justify-center py-24 space-y-6">
+                <div class="relative">
+                    <div class="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <i data-lucide="sparkles" class="w-6 h-6 text-indigo-600 animate-pulse"></i>
+                    </div>
+                </div>
+                <div class="text-center space-y-2">
+                    <h3 class="font-bold text-slate-800 text-base" id="loading-title">여행 일정을 디자인하는 중...</h3>
+                    <p class="text-xs text-slate-500 max-w-[240px] leading-relaxed">
+                        Gemini AI가 입력하신 조건에 맞춰 최적의 동선과 맛집을 탐색하고 있어요.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 3. Result View (Hidden by default) -->
+            <section id="result-view" class="hidden space-y-5">
+                <!-- Summary Header -->
+                <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-5 rounded-2xl shadow-md relative overflow-hidden">
+                    <div class="absolute right-[-10px] bottom-[-10px] opacity-10 pointer-events-none">
+                        <i data-lucide="compass" class="w-36 h-36"></i>
+                    </div>
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span id="result-badge" class="px-2.5 py-1 bg-indigo-500/30 border border-indigo-400/30 rounded-lg text-xs font-medium text-indigo-200 backdrop-blur-sm">
+                                2박 3일 • 혼자 여행
+                            </span>
+                            <span id="result-interests" class="text-xs text-indigo-200">#맛집 #힐링</span>
+                        </div>
+                        <h2 id="result-destination-title" class="text-xl font-bold tracking-tight">제주도 맞춤 여행 일정</h2>
+                    </div>
+                </div>
+
+                <!-- Day Tabs Navigation -->
+                <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1" id="day-tabs-container">
+                    <!-- Dynamically injected tabs -->
+                </div>
+
+                <!-- Day Content Cards Container -->
+                <div id="day-contents-container" class="space-y-4">
+                    <!-- Dynamically injected itinerary cards -->
+                </div>
+
+                <!-- Action Bottom Bar inside Result -->
+                <div class="pt-4 flex gap-3">
+                    <button onclick="sharePlan()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-medium text-xs flex items-center justify-center space-x-1.5 transition">
+                        <i data-lucide="share-2" class="w-4 h-4"></i>
+                        <span>일정 공유하기</span>
+                    </button>
+                    <button onclick="resetApp()" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 py-3 rounded-xl font-medium text-xs flex items-center justify-center space-x-1.5 transition">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                        <span>새로 만들기</span>
                     </button>
                 </div>
-                <div class="flex items-center space-x-4 text-xs text-indigo-200 pt-2 border-t border-white/10">
-                    <span id="resInterests">#맛집탐방 #힐링 #카페투어</span>
-                </div>
-            </div>
+            </section>
 
-            <!-- Day Tabs Container -->
-            <div class="sticky top-14 bg-slate-50 pt-2 pb-2 z-20">
-                <div id="dayTabs" class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
-                    <!-- Dynamic Day Tabs -->
-                </div>
-            </div>
-
-            <!-- Day Itinerary Cards Container -->
-            <div id="itineraryContent" class="space-y-4">
-                <!-- Dynamic Content -->
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="pt-4 flex space-x-3">
-                <button onclick="sharePlan()" class="flex-1 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3 px-4 rounded-xl shadow-sm transition-all text-sm flex items-center justify-center space-x-1.5">
-                    <span>🔗 일정 공유하기</span>
-                </button>
-                <button onclick="resetApp()" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-3 px-4 rounded-xl transition-all text-sm flex items-center justify-center space-x-1.5">
-                    <span>🔄 다시 만들기</span>
-                </button>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Toast Notification (Custom alert alternative) -->
-    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900/95 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-medium opacity-0 pointer-events-none transition-all duration-300 z-50 backdrop-blur-md">
-        링크가 클립보드에 복사되었습니다!
+        </main>
     </div>
 
-    <!-- JavaScript Logic -->
+    <!-- Custom Toast Message Box -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs px-4 py-2.5 rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 opacity-0 pointer-events-none z-50">
+        클립보드에 복사되었습니다!
+    </div>
+
+    <!-- JavaScript Application Logic -->
     <script>
-        let currentPlanData = null;
+        // Initialize Lucide icons on load
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            setupInterestChips();
+        });
 
-        // Form Submit Handler
-        async function handleGenerate(event) {
-            event.preventDefault();
-
-            const destination = document.getElementById('destination').value.trim();
-            const duration = document.getElementById('duration').value;
-            const companion = document.getElementById('companion').value;
-            const interestEls = document.querySelectorAll('input[name="interests"]:checked');
-            const interests = Array.from(interestEls).map(el => el.value);
-
-            if (!destination) return;
-
-            // Switch UI views
-            document.getElementById('formSection').classList.add('hidden');
-            document.getElementById('loadingSection').classList.remove('hidden');
-
-            try {
-                // Call real Vercel Serverless function /api/plan
-                const response = await fetch('/api/plan', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ destination, duration, companion, interests })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || '일정 생성에 실패했습니다.');
-                }
-
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-
-                currentPlanData = data;
-                renderPlan(currentPlanData);
-                
-                document.getElementById('loadingSection').classList.add('hidden');
-                document.getElementById('resultSection').classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            } catch (err) {
-                console.warn('API 호출 실패 또는 백엔드 미구동 상태. 목(Mock) 데이터로 대체합니다:', err.message);
-                // Fallback to mock data if API is not available locally
-                setTimeout(() => {
-                    currentPlanData = generateMockPlan(destination, duration, companion, interests);
-                    renderPlan(currentPlanData);
-                    
-                    document.getElementById('loadingSection').classList.add('hidden');
-                    document.getElementById('resultSection').classList.remove('hidden');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }, 1000);
-            }
+        // Companion selection helper
+        function selectCompanion(btn, value) {
+            document.querySelectorAll('.companion-btn').forEach(b => {
+                b.classList.remove('border-indigo-600', 'text-indigo-600', 'bg-indigo-50/50');
+                b.classList.add('border-slate-200', 'text-slate-600', 'bg-slate-50');
+            });
+            btn.classList.remove('border-slate-200', 'text-slate-600', 'bg-slate-50');
+            btn.classList.add('border-indigo-600', 'text-indigo-600', 'bg-indigo-50/50');
+            document.getElementById('companion').value = value;
         }
 
-        // Generate Mock Itinerary Data based on inputs
-        function generateMockPlan(destination, duration, companion, interests) {
+        // Interest chips styling toggle helper
+        function setupInterestChips() {
+            const chips = document.querySelectorAll('.interest-chip');
+            chips.forEach(chip => {
+                const checkbox = chip.querySelector('input[type="checkbox"]');
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        chip.classList.add('border-indigo-500', 'bg-indigo-50/50', 'text-indigo-600');
+                        chip.classList.remove('border-slate-200', 'bg-slate-50', 'text-slate-600');
+                    } else {
+                        chip.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'text-indigo-600');
+                        chip.classList.add('border-slate-200', 'bg-slate-50', 'text-slate-600');
+                    }
+                });
+            });
+        }
+
+        // Mock generator for dynamic itinerary based on input
+        function generateMockItinerary(destination, durationStr, companion, interests) {
+            // Determine days count
             let daysCount = 3;
-            if (duration.includes('1박')) daysCount = 2;
-            if (duration.includes('2박')) daysCount = 3;
-            if (duration.includes('3박')) daysCount = 4;
-            if (duration.includes('4박')) daysCount = 5;
-            if (duration.includes('5박')) daysCount = 6;
+            if (durationStr.includes('1박')) daysCount = 2;
+            else if (durationStr.includes('2박')) daysCount = 3;
+            else if (durationStr.includes('3박')) daysCount = 4;
+            else if (durationStr.includes('4박')) daysCount = 5;
+            else if (durationStr.includes('일주일')) daysCount = 7;
 
             const days = [];
             for (let i = 1; i <= daysCount; i++) {
                 days.push({
                     day: i,
-                    title: i === 1 ? '설레는 첫째 날' : (i === daysCount ? '아쉬운 마지막 날' : `알찬 ${i}번째 날`),
-                    spots: [
+                    title: i === 1 ? '설레는 첫째 날 도착 및 탐방' : (i === daysCount ? '알찬 마지막 날 아쉬운 발걸음' : `다채로운 ${i}일차 현지 체험`),
+                    slots: [
                         {
-                            time: '10:00 AM',
-                            title: `${destination} 대표 명소 탐방`,
-                            category: '관광/랜드마크',
-                            description: `${destination}의 분위기를 한눈에 느낄 수 있는 인기 장소 방문 및 산책`,
-                            tip: '오전 시간에 방문하면 비교적 한산하게 즐길 수 있어요.'
+                            time: '오전 (09:00 - 12:30)',
+                            place: `${destination} 대표 명소 및 랜드마크 산책`,
+                            desc: `${companion}와(과) 함께 아침 공기를 마시며 가볍게 둘러보기 좋은 장소입니다.`,
+                            tip: '오전 일찍 방문하면 사람이 적어 여유롭게 사진을 찍을 수 있어요.'
                         },
                         {
-                            time: '01:00 PM',
-                            title: '현지 추천 맛집 식사',
-                            category: '맛집',
-                            description: `현지인과 여행객 모두에게 사랑받는 시그니처 메뉴 맛보기`,
-                            tip: '대표 메뉴 사전 예약 또는 피크 타임 살짝 피해서 방문 추천!'
+                            time: '오후 (13:30 - 17:30)',
+                            place: interests.length > 0 ? `${interests[0]} 특화 추천 플레이스` : '현지 인기 카페 및 액티비티 체험',
+                            desc: `선택하신 관심사(${interests.join(', ') || '힐링'})를 반영한 맞춤형 코스입니다.`,
+                            tip: '사전 예약이 필요한 경우 미리 확인하시는 것을 추천합니다.'
                         },
                         {
-                            time: '03:30 PM',
-                            title: '감성 오션뷰/마운틴뷰 카페',
-                            category: '카페투어',
-                            description: `멋진 풍경을 배경으로 시그니처 음료와 디저트 즐기기`,
-                            tip: '창가 자리가 나면 바로 착석하는 것을 추천합니다.'
-                        },
-                        {
-                            time: '07:00 PM',
-                            title: '저녁 만찬 및 야경 산책',
-                            category: '식사/휴식',
-                            description: `여행의 피로를 녹여줄 맛있는 저녁 식사와 가벼운 야경 코스`,
-                            tip: '하루를 마무리하며 사진을 정리하기 좋은 코스예요.'
+                            time: '저녁 (18:30 - 21:00)',
+                            place: `${destination} 현지인 추천 맛집 및 야경 명소`,
+                            desc: '하루의 피로를 녹여줄 맛있는 식사와 은은한 야경을 감상하세요.',
+                            tip: '인기 있는 식당은 대기 시간이 발생할 수 있으니 캐치테이블을 확인하세요.'
                         }
                     ]
                 });
             }
-
-            return {
-                destination,
-                duration,
-                companion,
-                interests: interests.map(i => '#' + i).join(' '),
-                days
-            };
+            return days;
         }
 
-        // Render Plan to UI
-        function renderPlan(data) {
-            document.getElementById('resDestination').innerText = `${data.destination} 여행 일정`;
-            document.getElementById('resTag').innerText = `${data.duration} · ${data.companion}`;
-            document.getElementById('resInterests').innerText = data.interests;
+        // Main form handler with simulated Vercel API integration
+        async function handleGeneratePlan(event) {
+            event.preventDefault();
 
-            const tabsContainer = document.getElementById('dayTabs');
-            const contentContainer = document.getElementById('itineraryContent');
+            const destination = document.getElementById('destination').value.trim();
+            const duration = document.getElementById('duration').value;
+            const companion = document.getElementById('companion').value;
+            const checkedInterests = Array.from(document.querySelectorAll('input[name="interests"]:checked'))
+                                          .map(cb => cb.parentElement.textContent.trim().replace(/^[^\w가-힣]+/, '').trim());
 
+            // Switch to loading view
+            document.getElementById('form-view').classList.add('hidden');
+            document.getElementById('loading-view').classList.remove('hidden');
+            document.getElementById('reset-btn').classList.add('hidden');
+
+            // ---------------------------------------------------------------------------
+            // [Vercel Serverless Function Integration Guide]
+            // 추후 실제 Vercel 배포 시 아래 주석을 해제하고 /api/plan 엔드포인트를 호출하세요.
+            // ---------------------------------------------------------------------------
+            /*
+            try {
+                const response = await fetch('/api/plan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ destination, duration, companion, interests: checkedInterests })
+                });
+                if (!response.ok) throw new Error('API request failed');
+                const itineraryData = await response.json();
+                renderResults(destination, duration, companion, checkedInterests, itineraryData);
+                return;
+            } catch (err) {
+                console.warn('API 호출 실패 또는 미구현으로 시뮬레이션 데이터를 표시합니다.', err);
+            }
+            */
+
+            // Simulation delay (1.5 seconds)
+            setTimeout(() => {
+                const mockData = generateMockItinerary(destination, duration, companion, checkedInterests);
+                renderResults(destination, duration, companion, checkedInterests, mockData);
+            }, 1500);
+        }
+
+        // Render Results UI
+        function renderResults(destination, duration, companion, interests, itineraryData) {
+            document.getElementById('loading-view').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+            document.getElementById('reset-btn').classList.remove('hidden');
+
+            // Header info
+            document.getElementById('result-destination-title').textContent = `${destination} 맞춤 여행 일정`;
+            document.getElementById('result-badge').textContent = `${duration} • ${companion} 여행`;
+            document.getElementById('result-interests').textContent = interests.length > 0 ? interests.map(i => `#${i}`).join(' ') : '#종합여행';
+
+            // Render Day Tabs
+            const tabsContainer = document.getElementById('day-tabs-container');
             tabsContainer.innerHTML = '';
-            contentContainer.innerHTML = '';
 
-            data.days.forEach((dayObj, index) => {
-                // Render Tab button
+            // Render Day Contents
+            const contentsContainer = document.getElementById('day-contents-container');
+            contentsContainer.innerHTML = '';
+
+            itineraryData.forEach((dayObj, index) => {
+                // Tab button
                 const tabBtn = document.createElement('button');
-                tabBtn.className = `day-tab px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${index === 0 ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`;
-                tabBtn.innerText = `Day ${dayObj.day}`;
+                tabBtn.type = 'button';
+                tabBtn.className = `day-tab px-4 py-2 rounded-xl text-xs font-semibold shrink-0 transition ${index === 0 ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`;
+                tabBtn.textContent = `Day ${dayObj.day}`;
                 tabBtn.onclick = () => switchDay(dayObj.day);
                 tabsContainer.appendChild(tabBtn);
 
-                // Render Day Content Card
-                const dayCard = document.createElement('div');
-                dayCard.id = `day-card-${dayObj.day}`;
-                dayCard.className = `space-y-3 ${index === 0 ? 'block' : 'hidden'}`;
+                // Day Content Card
+                const cardDiv = document.createElement('div');
+                cardDiv.id = `day-content-${dayObj.day}`;
+                cardDiv.className = `day-card space-y-3 ${index === 0 ? '' : 'hidden'}`;
                 
-                let spotsHtml = '';
-                dayObj.spots.forEach((spot, sIndex) => {
-                    spotsHtml += `
-                        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm relative overflow-hidden">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold px-2.5 py-0.5 bg-indigo-50 text-indigo-600 rounded-full">${spot.time}</span>
-                                <span class="text-[11px] text-slate-400 font-medium">${spot.category}</span>
+                let slotsHtml = '';
+                dayObj.slots.forEach(slot => {
+                    slotsHtml += `
+                        <div class="bg-slate-50 border border-slate-100 rounded-xl p-3.5 space-y-2 hover:border-indigo-100 transition">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">${slot.time}</span>
                             </div>
-                            <h3 class="font-bold text-slate-900 text-base mb-1">${spot.title}</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-3">${spot.description}</p>
-                            <div class="bg-amber-50 border border-amber-200/60 rounded-xl p-2.5 text-[11px] text-amber-800 flex items-start space-x-1.5">
-                                <span class="flex-shrink-0">💡</span>
-                                <span class="font-medium">${spot.tip}</span>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-800">${slot.place}</h4>
+                                <p class="text-[11px] text-slate-600 mt-0.5 leading-relaxed">${slot.desc}</p>
+                            </div>
+                            <div class="pt-2 border-t border-slate-200/60 flex items-start space-x-1.5 text-[10px] text-amber-700 bg-amber-50/70 p-2 rounded-lg">
+                                <i data-lucide="lightbulb" class="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-500"></i>
+                                <span>${slot.tip}</span>
                             </div>
                         </div>
                     `;
                 });
 
-                dayCard.innerHTML = `
-                    <div class="flex items-center justify-between px-1">
-                        <h3 class="font-bold text-slate-800 text-base">Day ${dayObj.day} <span class="text-xs font-normal text-slate-500 ml-1">(${dayObj.title})</span></h3>
+                cardDiv.innerHTML = `
+                    <div class="flex items-center justify-between pb-1 px-1">
+                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wide">Day ${dayObj.day} • ${dayObj.title}</h3>
                     </div>
-                    ${spotsHtml}
+                    <div class="space-y-3">
+                        ${slotsHtml}
+                    </div>
                 `;
-                contentContainer.appendChild(dayCard);
+                contentsContainer.appendChild(cardDiv);
             });
+
+            // Re-initialize icons for newly added DOM elements
+            lucide.createIcons();
         }
 
-        // Switch active Day tab
-        function switchDay(dayNum) {
-            const tabs = document.querySelectorAll('.day-tab');
-            tabs.forEach((tab, idx) => {
-                if (idx + 1 === dayNum) {
-                    tab.className = 'day-tab px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-md shadow-indigo-200';
+        // Switch active day tab
+        function switchDay(dayNumber) {
+            document.querySelectorAll('.day-tab').forEach((tab, idx) => {
+                if (idx + 1 === dayNumber) {
+                    tab.className = 'day-tab px-4 py-2 rounded-xl text-xs font-semibold shrink-0 transition bg-indigo-600 text-white shadow-md shadow-indigo-500/20';
                 } else {
-                    tab.className = 'day-tab px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-white text-slate-600 border border-slate-200 hover:bg-slate-100';
+                    tab.className = 'day-tab px-4 py-2 rounded-xl text-xs font-semibold shrink-0 transition bg-slate-100 text-slate-600 hover:bg-slate-200';
                 }
             });
 
-            const cards = document.querySelectorAll('[id^="day-card-"]');
-            cards.forEach(card => {
-                if (card.id === `day-card-${dayNum}`) {
+            document.querySelectorAll('.day-card').forEach((card, idx) => {
+                if (idx + 1 === dayNumber) {
                     card.classList.remove('hidden');
                 } else {
                     card.classList.add('hidden');
@@ -380,42 +428,64 @@
             });
         }
 
-        // Edit Form Action
-        function editForm() {
-            document.getElementById('resultSection').classList.add('hidden');
-            document.getElementById('formSection').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Reset App
+        // Reset app state
         function resetApp() {
-            document.getElementById('travelForm').reset();
-            document.getElementById('resultSection').classList.add('hidden');
-            document.getElementById('formSection').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('loading-view').classList.add('hidden');
+            document.getElementById('form-view').classList.remove('hidden');
+            document.getElementById('reset-btn').classList.add('hidden');
+            document.getElementById('travel-form').reset();
+            // Reset companion buttons
+            document.querySelectorAll('.companion-btn').forEach((b, idx) => {
+                if (idx === 0) {
+                    b.classList.add('border-indigo-600', 'text-indigo-600', 'bg-indigo-50/50');
+                    b.classList.remove('border-slate-200', 'text-slate-600', 'bg-slate-50');
+                } else {
+                    b.classList.remove('border-indigo-600', 'text-indigo-600', 'bg-indigo-50/50');
+                    b.classList.add('border-slate-200', 'text-slate-600', 'bg-slate-50');
+                }
+            });
+            document.getElementById('companion').value = '혼자';
+            // Reset interest chips styling
+            document.querySelectorAll('.interest-chip').forEach(chip => {
+                chip.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'text-indigo-600');
+                chip.classList.add('border-slate-200', 'bg-slate-50', 'text-slate-600');
+            });
         }
 
-        // Share Plan (Clipboard copy fallback)
+        // Share plan simulation using custom toast
         function sharePlan() {
-            const dummyText = `✈️ [TripGenie AI 맞춤 일정]\n여행지: ${currentPlanData.destination} (${currentPlanData.duration})\n일정이 성공적으로 생성되었습니다!`;
-            
+            const dummyUrl = window.location.href;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(dummyUrl).then(() => {
+                    showToast('여행 일정 링크가 복사되었습니다!');
+                }).catch(() => {
+                    fallbackCopy(dummyUrl);
+                });
+            } else {
+                fallbackCopy(dummyUrl);
+            }
+        }
+
+        function fallbackCopy(text) {
             const textArea = document.createElement("textarea");
-            textArea.value = dummyText;
+            textArea.value = text;
+            textArea.style.position = "fixed";
             document.body.appendChild(textArea);
+            textArea.focus();
             textArea.select();
             try {
                 document.execCommand('copy');
-                showToast('일정 요약이 클립보드에 복사되었습니다.');
+                showToast('여행 일정 링크가 복사되었습니다!');
             } catch (err) {
                 showToast('복사에 실패했습니다.');
             }
             document.body.removeChild(textArea);
         }
 
-        // Toast Notification helper
         function showToast(message) {
             const toast = document.getElementById('toast');
-            toast.innerText = message;
+            toast.textContent = message;
             toast.classList.remove('opacity-0', 'pointer-events-none');
             toast.classList.add('opacity-100');
             setTimeout(() => {
