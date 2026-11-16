@@ -8,13 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts (Inter & Pretendard vibe) -->
+    <!-- Google Fonts (Pretendard) -->
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Pretendard', sans-serif;
         }
-        /* Custom scrollbar for horizontal chips if needed */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -52,7 +51,7 @@
         <div id="form-card" class="bg-white rounded-3xl shadow-xl shadow-indigo-100/60 border border-slate-100 p-6 mb-6 transition-all duration-300">
             <div class="mb-5">
                 <h1 class="text-xl font-bold text-slate-900">어디로 떠나시나요?</h1>
-                <p class="text-xs text-slate-500 mt-1">AI가 취향에 딱 맞는 맞춤형 여행 일정을 짜드립니다.</p>
+                <p class="text-xs text-slate-500 mt-1">AI가 취향과 이동 수단에 딱 맞는 맞춤형 여행 일정을 짜드립니다.</p>
             </div>
 
             <form id="trip-form" class="space-y-4">
@@ -107,26 +106,45 @@
                     </div>
                 </div>
 
+                <!-- Transportation Selection -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">주요 이동 수단</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                            <i class="fa-solid fa-car-side"></i>
+                        </span>
+                        <select id="transportation" class="w-full pl-10 pr-8 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 appearance-none transition-all">
+                            <option value="대중교통 (지하철/버스)" selected>대중교통 (지하철/버스)</option>
+                            <option value="렌터카 / 자가용">렌터카 / 자가용</option>
+                            <option value="택시 및 투어버스">택시 및 투어버스</option>
+                            <option value="도보 중심 (뚜벅이 여행)">도보 중심 (뚜벅이 여행)</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </span>
+                    </div>
+                </div>
+
                 <!-- Interests Selection -->
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">관심사 (중복 선택)</label>
                     <div id="interests-container" class="flex flex-wrap gap-2">
-                        <button type="button" data-value="맛집투어" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-indigo-50 text-indigo-600 border border-indigo-200 transition-all active">
+                        <button type="button" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-indigo-50 text-indigo-600 border border-indigo-200 transition-all active" data-val="맛집투어">
                             <i class="fa-solid fa-utensils mr-1"></i> 맛집투어
                         </button>
-                        <button type="button" data-value="카페산책" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 transition-all">
+                        <button type="button" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 transition-all" data-val="카페산책">
                             <i class="fa-solid fa-mug-hot mr-1"></i> 카페산책
                         </button>
-                        <button type="button" data-value="역사유적" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 transition-all">
+                        <button type="button" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 transition-all" data-val="역사유적">
                             <i class="fa-solid fa-landmark mr-1"></i> 역사유적
                         </button>
-                        <button type="button" data-value="쇼핑" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 transition-all">
+                        <button type="button" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 transition-all" data-val="쇼핑">
                             <i class="fa-solid fa-bag-shopping mr-1"></i> 쇼핑
                         </button>
-                        <button type="button" data-value="자연힐링" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 transition-all">
+                        <button type="button" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 transition-all" data-val="자연힐링">
                             <i class="fa-solid fa-tree mr-1"></i> 자연힐링
                         </button>
-                        <button type="button" data-value="액티비티" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 transition-all">
+                        <button type="button" class="interest-chip px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 transition-all" data-val="액티비티">
                             <i class="fa-solid fa-person-hiking mr-1"></i> 액티비티
                         </button>
                     </div>
@@ -150,7 +168,7 @@
                 </div>
             </div>
             <h3 class="font-bold text-slate-900 text-lg mb-1" id="loading-title">AI가 일정을 분석 중입니다</h3>
-            <p class="text-xs text-slate-500" id="loading-desc">선택하신 목적지와 취향에 맞는 최적의 동선을 구성하고 있어요...</p>
+            <p class="text-xs text-slate-500" id="loading-desc">선택하신 목적지와 이동 수단에 맞는 최적의 동선을 구성하고 있어요...</p>
         </div>
 
         <!-- Results Section -->
@@ -219,7 +237,7 @@
                 chip.classList.toggle('border-slate-200');
                 chip.classList.toggle('active');
 
-                const val = chip.getAttribute('data-value');
+                const val = chip.getAttribute('data-val');
                 if (selectedInterests.includes(val)) {
                     selectedInterests = selectedInterests.filter(item => item !== val);
                 } else {
@@ -234,6 +252,7 @@
             const destination = document.getElementById('destination').value.trim();
             const durationDays = parseInt(document.getElementById('duration').value);
             const companion = document.getElementById('companion').value;
+            const transportation = document.getElementById('transportation').value;
 
             if (!destination) return;
 
@@ -242,7 +261,6 @@
             const loader = document.getElementById('loading-state');
             loader.classList.remove('hidden');
 
-            // Simulate /api/plan fetch request (with fallback to mock data since backend endpoint doesn't exist yet)
             try {
                 let itineraryData;
                 try {
@@ -250,14 +268,14 @@
                     const res = await fetch('/api/plan', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ destination, days: durationDays, companion, interests: selectedInterests })
+                        body: JSON.stringify({ destination, days: durationDays, companion, interests: selectedInterests, transportation })
                     });
                     if (!res.ok) throw new Error('API not available');
                     itineraryData = await res.json();
                 } catch (err) {
-                    // Fallback to rich mock data generated based on user input
+                    // Fallback to rich mock data generated based on user input including transportation mode
                     await new Promise(resolve => setTimeout(resolve, 1500)); // simulate network delay
-                    itineraryData = generateMockItinerary(destination, durationDays, companion, selectedInterests);
+                    itineraryData = generateMockItinerary(destination, durationDays, companion, selectedInterests, transportation);
                 }
 
                 renderItinerary(itineraryData);
@@ -273,9 +291,10 @@
             }
         });
 
-        // Rich Mock Itinerary Generator based on User Inputs
-        function generateMockItinerary(destination, days, companion, interests) {
+        // Rich Mock Itinerary Generator incorporating Transportation Mode
+        function generateMockItinerary(destination, days, companion, interests, transportation) {
             const interestStr = interests.length > 0 ? interests.join(', ') : '자유 관광';
+            const transportStr = transportation || '대중교통';
             const daysList = [];
 
             for (let i = 1; i <= days; i++) {
@@ -284,21 +303,21 @@
 
                 if (i === 1) {
                     activities = [
-                        { time: '10:00', title: `${destination} 도착 및 숙소 체크인`, desc: '공항 도착 후 이동 및 짐 맡기기', icon: 'fa-plane-arrival', tag: '이동' },
+                        { time: '10:00', title: `${destination} 도착 및 숙소 체크인`, desc: `공항 도착 후 [${transportStr}]을(를) 이용해 이동 및 짐 풀기`, icon: 'fa-plane-arrival', tag: '이동' },
                         { time: '12:30', title: '현지 추천 로컬 맛집 점심 식사', desc: `대표 향토 음식 및 ${interestStr} 관련 첫 코스`, icon: 'fa-utensils', tag: '맛집' },
-                        { time: '15:00', title: '시내 중심가 및 주요 랜드마크 탐방', desc: '랜드마크 산책 및 기념사진 촬영', icon: 'fa-camera', tag: '관광' },
+                        { time: '15:00', title: '시내 중심가 및 주요 랜드마크 탐방', desc: `${transportStr}로 이동하며 주변 풍경 감상 및 산책`, icon: 'fa-camera', tag: '관광' },
                         { time: '19:00', title: '분위기 좋은 저녁 식사 및 야경 감상', desc: '탁 트인 전망과 함께하는 저녁 만찬', icon: 'fa-moon', tag: '힐링' }
                     ];
                 } else if (i === days) {
                     activities = [
                         { time: '09:30', title: '여유로운 조식 및 체크아웃 준비', desc: '숙소 주변 산책 및 가벼운 아침 식사', icon: 'fa-mug-hot', tag: '휴식' },
                         { time: '11:00', title: '기념품 쇼핑 및 로컬 마켓 방문', desc: '지인 선물 및 특산품 구입하기', icon: 'fa-bag-shopping', tag: '쇼핑' },
-                        { time: '14:00', title: '공항 이동 전 마지막 카페 타임', desc: '여행을 마무리하며 추억 정리', icon: 'fa-coffee', tag: '카페' },
+                        { time: '14:00', title: `공항 이동 전 마지막 코스 (${transportStr})`, desc: '여행을 마무리하며 추억 정리', icon: 'fa-coffee', tag: '카페' },
                         { time: '17:00', title: '공항 이동 및 출국 수속', desc: '안전한 귀가길', icon: 'fa-plane-departure', tag: '이동' }
                     ];
                 } else {
                     activities = [
-                        { time: '10:00', title: `${interestStr} 집중 탐방 코스 A`, desc: '현지인들이 추천하는 감성 스팟 방문', icon: 'fa-compass', tag: '체험' },
+                        { time: '10:00', title: `${interestStr} 집중 탐방 코스 A`, desc: `현지인들이 추천하는 감성 스팟 방문 ([${transportStr}] 이용)`, icon: 'fa-compass', tag: '체험' },
                         { time: '13:00', title: '인스타 피드용 유명 맛집 런치', desc: '비주얼과 맛을 모두 잡은 인기 식당', icon: 'fa-utensils', tag: '맛집' },
                         { time: '15:30', title: '오후 힐링 산책 및 로컬 카페 방문', desc: '여유로운 분위기 속에서 재충전', icon: 'fa-tree', tag: '휴식' },
                         { time: '19:30', title: '현지 분위기 만끽하는 저녁 파티/디너', desc: `${companion}과 함께하는 특별한 저녁 시간`, icon: 'fa-wine-glass', tag: '나이트' }
@@ -313,6 +332,7 @@
                 duration: `${days}박 ${days + 1}일`,
                 companion: companion,
                 interests: interests,
+                transportation: transportStr,
                 days: daysList
             };
         }
@@ -320,8 +340,8 @@
         // Render Itinerary to UI
         function renderItinerary(data) {
             document.getElementById('result-destination').textContent = `${data.destination} ${data.duration} 여행`;
-            document.getElementById('result-badge').textContent = `${data.companion}과 함께 • ${data.interests.join(', ')}`;
-            document.getElementById('result-subtitle').textContent = `Gemini AI가 ${data.destination}의 베스트 동선과 취향을 반영해 설계했습니다.`;
+            document.getElementById('result-badge').textContent = `${data.companion}과 함께 • ${data.interests.join(', ')} • ${data.transportation || '대중교통'}`;
+            document.getElementById('result-subtitle').textContent = `Gemini AI가 ${data.destination}의 베스트 동선과 취향, 이동 수단(${data.transportation || '대중교통'})을 반영해 설계했습니다.`;
 
             const container = document.getElementById('itinerary-container');
             container.innerHTML = '';
@@ -382,7 +402,6 @@
                     showToast('일정 요약이 클립보드에 복사되었습니다.');
                 });
             } else {
-                // Fallback for iframe environments
                 const textarea = document.createElement('textarea');
                 textarea.value = textToCopy;
                 document.body.appendChild(textarea);
